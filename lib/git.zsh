@@ -7,8 +7,13 @@ function git_prompt_info() {
 parse_git_dirty () {
   gitstat=$(git status 2>/dev/null | grep '\(# Untracked\|# Changes\|# Changed but not updated:\|# Your branch\)')
 
-  if [[ $(echo ${gitstat} | grep -c "^\(# Changes to be committed:\|# Changed but not updated:\)$") > 0 ]]; then
-	echo -n "$ZSH_THEME_GIT_PROMPT_DIRTY"
+  if [[ $(echo ${gitstat} | grep -c "^\(# Changed but not updated:\)$") > 0 ]]; then
+	echo -n "$ZSH_THEME_GIT_PROMPT_UNUPDATED"
+    return
+  fi
+
+  if [[ $(echo ${gitstat} | grep -c "^\(# Changes to be committed:\)$") > 0 ]]; then
+	echo -n "$ZSH_THEME_GIT_PROMPT_UNCOMMITTED"
     return
   fi
 
