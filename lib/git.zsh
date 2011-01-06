@@ -5,14 +5,31 @@ function git_prompt_info() {
 }
 
 parse_git_dirty () {
-  gitstat=$(git status 2>/dev/null | grep '\(# Untracked\|# Changes\|# Changed but not updated:\)')
+  gitstat=$(git status 2>/dev/null | grep '\(# Untracked\|# Changes\|# Changed but not updated:\|# Your branch\)')
 
-  if [[ $(echo ${gitstat} | grep -c "^# Changes to be committed:$") > 0 ]]; then
+  if [[ $(echo ${gitstat} | grep -c "^\(# Changes to be committed:\|# Changed but not updated:\)$") > 0 ]]; then
 	echo -n "$ZSH_THEME_GIT_PROMPT_DIRTY"
+    return
   fi
 
-  if [[ $(echo ${gitstat} | grep -c "^\(# Untracked files:\|# Changed but not updated:\)$") > 0 ]]; then
+  if [[ $(echo ${gitstat} | grep -c "^\(# Untracked files:\)$") > 0 ]]; then
 	echo -n "$ZSH_THEME_GIT_PROMPT_UNTRACKED"
+    return
+  fi 
+  
+  if [[ $(echo ${gitstat} | grep -c "^\(# Your branch is ahead of\)") > 0 ]]; then
+    echo -n "$ZSH_THEME_GIT_PROMPT_AHEAD"
+    return
+  fi 
+
+  if [[ $(echo ${gitstat} | grep -c "^\(# Your branch is behind\)") > 0 ]]; then
+    echo -n "$ZSH_THEME_GIT_PROMPT_BEHIND"
+    return
+  fi 
+  
+  if [[ $(echo ${gitstat} | grep -c "^\(# Your branch and\)") > 0 ]]; then
+    echo -n "$ZSH_THEME_GIT_PROMPT_DIVERGED"
+    return
   fi 
 
   if [[ $(echo ${gitstat} | grep -v '^$' | wc -l | tr -d ' ') == 0 ]]; then
@@ -31,6 +48,7 @@ function current_branch() {
 
 # get the status of the working tree
 git_prompt_status() {
+  echo "--$ZSH_THEME_GIT_PROMPT_MODIFIED --"
   INDEX=$(git status --porcelain 2> /dev/null)
   STATUS=""
   if $(echo "$INDEX" | grep '^?? ' &> /dev/null); then
