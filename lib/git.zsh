@@ -12,6 +12,11 @@ parse_git_dirty () {
     return
   fi
 
+  if [[ $(echo ${gitstat} | grep -c "^\(# Changes not staged\)") > 0 ]]; then
+	echo -n "$ZSH_THEME_GIT_PROMPT_UNUPDATED"
+    return
+  fi
+
   if [[ $(echo ${gitstat} | grep -c "^\(# Changes to be committed:\)$") > 0 ]]; then
 	echo -n "$ZSH_THEME_GIT_PROMPT_UNCOMMITTED"
     return
