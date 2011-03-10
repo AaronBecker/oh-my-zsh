@@ -1,7 +1,7 @@
 # get the name of the branch we are on
 function git_prompt_info() {
   ref=$(git symbolic-ref HEAD 2> /dev/null) || return
-  echo "$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$(parse_git_dirty)$ZSH_THEME_GIT_PROMPT_SUFFIX"
+  echo "$ZSH_THEME_GIT_PROMPT_PREFIX${ref#refs/heads/}$ZSH_THEME_GIT_PROMPT_BRANCH_SUFFIX$(parse_git_dirty)$ZSH_THEME_GIT_PROMPT_SUFFIX"
 }
 
 parse_git_dirty () {
@@ -9,7 +9,6 @@ parse_git_dirty () {
 
   if [[ $(echo ${gitstat} | grep -c "^\(# Changed but not updated:\)$") > 0 ]]; then
 	echo -n "$ZSH_THEME_GIT_PROMPT_UNUPDATED"
-    return
   fi
 
   if [[ $(echo ${gitstat} | grep -c "^\(# Changes not staged\)") > 0 ]]; then
@@ -19,12 +18,10 @@ parse_git_dirty () {
 
   if [[ $(echo ${gitstat} | grep -c "^\(# Changes to be committed:\)$") > 0 ]]; then
 	echo -n "$ZSH_THEME_GIT_PROMPT_UNCOMMITTED"
-    return
   fi
 
   if [[ $(echo ${gitstat} | grep -c "^\(# Untracked files:\)$") > 0 ]]; then
 	echo -n "$ZSH_THEME_GIT_PROMPT_UNTRACKED"
-    return
   fi 
   
   if [[ $(echo ${gitstat} | grep -c "^\(# Your branch is ahead of\)") > 0 ]]; then
@@ -58,7 +55,6 @@ function current_branch() {
 
 # get the status of the working tree
 git_prompt_status() {
-  echo "--$ZSH_THEME_GIT_PROMPT_MODIFIED --"
   INDEX=$(git status --porcelain 2> /dev/null)
   STATUS=""
   if $(echo "$INDEX" | grep '^?? ' &> /dev/null); then
